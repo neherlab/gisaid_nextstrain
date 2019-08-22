@@ -34,11 +34,11 @@ git clone https://github.com/neherlab/gisaid_nextstrain
 cd gisaid_nextstrain
 mkdir data && cp example_data/*fasta data
 conda activate nextstrain
-snakemake auspice/h1n1pdm_ha_tree.json
+snakemake auspice/h3n2_ha_tree.json
 auspice view
 ```
 This will run for a few minutes.
-Once it completed, you should be able view an analysis in your browser at [`http://localhost:4000/h1n1pdm_ha`](http://localhost:4000/h1n1pdm_ha)
+Once it completed, you should be able view an analysis in your browser at [`http://localhost:4000/h3n2_ha`](http://localhost:4000/h3n2_ha)
 
 [Nextstrain]: https://nextstrain.org
 [fauna]: https://github.com/nextstrain/fauna
