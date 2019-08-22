@@ -2,6 +2,23 @@ from datetime import date
 import pandas as pd
 from treetime.utils import numeric_date
 
+# your input data -- has to conform to this format
+input_data = "data/{lineage}_{segment}.fasta"
+# note that the entries in the fasta header have to follow this order
+# and the date has to be in a format 2017-09-23.
+# (unknown days/month can be specified as 2017-XX-XX)
+fasta_fields = "strain isolate_id type lineage date accession"
+# you can change this, but this has to match your data!
+
+# configuration file names
+outliers = "config/outliers_{lineage}.txt",
+exclude_sites = "config/exclude-sites_{lineage}.txt",
+references = "config/references_{lineage}.txt",
+reference = "config/reference_{lineage}_{segment}.gb",
+colors = "config/colors.tsv",
+auspice_config = "config/auspice_config_{lineage}.json",
+
+
 def reference_strain(v):
     references = {'h3n2':"A/Beijing/32/1992",
                   'h1n1pdm':"A/California/07/2009",
@@ -31,26 +48,30 @@ def clock_rate(w):
 def clock_std_dev(w):
     return 0.2*clock_rate(w)
 
-
-# file names
-outliers = "config/outliers_{lineage}.txt",
-exclude_sites = "config/exclude-sites_{lineage}.txt",
-references = "config/references_{lineage}.txt",
-reference = "config/reference_{lineage}_{segment}.gb",
-colors = "config/colors.tsv",
-auspice_config = "config/auspice_config_{lineage}.json",
-input_data = "data/{lineage}_{segment}.fasta"
-
+rule fix_header:
+    message: "stripping white space from fasta header"
+    input:
+        sequences = input_data
+    output:
+        "results/reformatted_{lineage}_{segment}.fasta"
+    run:
+        from Bio import SeqIO
+        with open(output[0], 'w') as fh:
+            for seq in SeqIO.parse(input.sequences, 'fasta'):
+                seq.id = "|".join([x.strip().replace(' ','_') for x in seq.description.split('|')])
+                seq.description = ''
+                seq.name = seq.id
+                SeqIO.write(seq, fh, 'fasta')
 
 rule parse:
     message: "Parsing fasta into sequences and metadata"
     input:
-        sequences = input_data
+        sequences = rules.fix_header.output
     output:
         sequences = "results/sequences_{lineage}_{segment}.fasta",
         metadata = "results/metadata_{lineage}_{segment}.tsv"
     params:
-        fasta_fields =  "strain virus accession date region country division location passage authors"
+        fasta_fields = fasta_fields
     shell:
         """
         augur parse \
@@ -63,7 +84,7 @@ rule parse:
 rule filter:
     message:
         """
-        Filtering {wildcards.lineage} {wildcards.segment} {wildcards.passage} sequences:
+        Filtering {wildcards.lineage} {wildcards.segment} sequences:
           - less than {params.min_length} bases
           - outliers
           - samples with missing region and country metadata
@@ -100,9 +121,9 @@ rule align:
         alignment = "results/aligned_{lineage}_{segment}.fasta"
     shell:
         """
-        python3 scripts/codon_align.py \
+        augur align \
             --sequences {input.sequences} \
-            --reference {input.reference} \
+            --reference-sequence {input.reference} \
             --output {output.alignment}
         """
 
@@ -176,7 +197,7 @@ rule ancestral:
         augur ancestral \
             --tree {input.tree} \
             --alignment {input.alignment} \
-            --output {output.node_data} \
+            --output-node-data {output.node_data} \
             --inference {params.inference}
         """
 
@@ -197,29 +218,6 @@ rule translate:
             --output {output.node_data} \
         """
 
-rule traits:
-    message:
-        """
-        Inferring ancestral traits for {params.columns!s}
-        """
-    input:
-        tree = rules.refine.output.tree,
-        metadata = rules.parse.output.metadata
-    output:
-        node_data = "results/traits_{lineage}_{segment}.json",
-    params:
-        columns = "region"
-    shell:
-        """
-        augur traits \
-            --tree {input.tree} \
-            --metadata {input.metadata} \
-            --output {output.node_data} \
-            --columns {params.columns} \
-            --confidence
-        """
-
-
 def _get_node_data_for_export(wildcards):
     """Return a list of node data files to include for a given build's wildcards.
     """
@@ -228,7 +226,6 @@ def _get_node_data_for_export(wildcards):
         rules.refine.output.node_data,
         rules.ancestral.output.node_data,
         rules.translate.output.node_data,
-        rules.traits.output.node_data,
     ]
     # Convert input files from wildcard strings to real file names.
     inputs = [input_file.format(**wildcards) for input_file in inputs]
