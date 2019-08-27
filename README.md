@@ -3,16 +3,21 @@
 This is a simple [nextstrain](https://nextstrain.org) pipeline for seasonal influenza virus data sets download from [GISAID](https://gisaid.org).
 It is derived from the main nextstrain seasonal flu analysis workflow available at [nextstrain/seasonal-flu](https://github.com/nextstrain/seasonal-flu).
 
-To install nextstrain, you need a linux-like environment (for example Windows Subsystem for Linux) and execute the script [`install_conda.sh`](install_conda.sh):
+To install nextstrain, you need a linux-like environment (for example Windows Subsystem for Linux, MacOS, or Linux) and execute the script [`install_conda.sh`](install_conda.sh):
 ```
 # This script installs miniconda and augur. It can be run without
 # administrator privileges. It has the following prerequisites
 #  - curl
 #  - gcc
 # You need to install these via your package manager (e.g. apt-get)
+# In case of macOS, you will need to install the developer tools
 
-# get miniconda
+# get miniconda for linux (use for WSL and Linux, for MacOS, comment out this line and use the line below)
 curl https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o conda_installer.sh
+
+## use the following line for macOS
+#curl https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -o conda_installer.sh
+
 
 # install miniconda -- accepting defaults should be fine
 bash conda_installer.sh
