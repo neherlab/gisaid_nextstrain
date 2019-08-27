@@ -14,10 +14,5 @@ bash conda_installer.sh
 curl http://data.nextstrain.org/nextstrain.yml --compressed -o nextstrain.yml
 conda env create -f nextstrain.yml
 
-source ~/.bashrc
-
-conda activate nextstrain
-npm install --global auspice
-
 
 

@@ -20,12 +20,19 @@ bash conda_installer.sh
 ## install nextstrain
 curl http://data.nextstrain.org/nextstrain.yml --compressed -o nextstrain.yml
 conda env create -f nextstrain.yml
+```
+These commands are part of the script [`install_conda.sh`](install_conda.sh).
+They install miniconda and create an environment in which you can run nextstrain.
+Running these commands will prompt you to accept terms of conditions and specify the location of the installation -- the default answers are fine here.
+The conda installer will also ask you whether you want to set-up the conda installation -- choose `yes`.
 
-source ~/.bashrc
-
+Next, we need to install the visualization component.
+Open a new terminal and type
+```
 conda activate nextstrain
 npm install --global auspice
 ```
+These commends are also provided as a script [`install_auspice.sh`](install_auspice.sh).
 Once this is done, you can download this repository and run a test analysis using the following commands (provided as `test_installation.sh`).
 ```
 # get the influenza/gisaid repository
