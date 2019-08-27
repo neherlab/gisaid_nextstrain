@@ -31,8 +31,9 @@ Open a new terminal and type
 conda activate nextstrain
 npm install --global auspice
 ```
-These commends are also provided as a script [`install_auspice.sh`](install_auspice.sh).
-Once this is done, you can download this repository and run a test analysis using the following commands (provided as `test_installation.sh`).
+These commands are also provided as a script [`install_auspice.sh`](install_auspice.sh).
+
+Once this is done, you can download this repository and run a test analysis using the following commands (provided as [`test_installation.sh`](test_installation.sh)).
 ```
 # get the influenza/gisaid repository
 git clone https://github.com/neherlab/gisaid_nextstrain
