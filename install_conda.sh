@@ -1,4 +1,4 @@
-# This script installs augur and auspice and can be run without
+# This script installs miniconda abd augur. It can be run without
 # administrator privileges. It has the following prerequisits
 #  - curl
 #  - gcc

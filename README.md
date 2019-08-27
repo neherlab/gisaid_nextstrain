@@ -5,7 +5,7 @@ It is derived from the main nextstrain seasonal flu analysis workflow available 
 
 This repository also includes an install scripts `install_conda.sh` that you will need to run before analyzing your data with nextstrain.
 ```
-# This script installs augur and auspice and can be run without
+# This script installs miniconda abd augur. It can be run without
 # administrator privileges. It has the following prerequisits
 #  - curl
 #  - gcc
